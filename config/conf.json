@@ -1,0 +1,12 @@
+{
+    "botApiToken": "BOT_API_TOKEN",
+    "channelId": "CHANNEL_ID",
+    "resolution": [640, 480],
+    "fps": 75.0,
+    "minFrames": 10,
+    "maxFrames": 4500,
+    "maxSequence": 3,
+    "timeReset": 15000,
+    "delay": 300,
+    "noMovementLimit": 500
+}
