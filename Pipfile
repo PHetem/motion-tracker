@@ -8,6 +8,8 @@ requests = "*"
 imutils = "*"
 opencv-python = "*"
 pygrabber = "*"
+numpy = "*"
+matplotlib = "*"
 python-dotenv = "*"
 
 [dev-packages]
