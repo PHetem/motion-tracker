@@ -64,6 +64,7 @@ class VideoStreamer:
                 self.consecutiveMotionFrames += 1
 
                 self.setMovement(True)
+                self.addText(frame)
                 self.write(frame)
 
             elif self.isCapturing:
@@ -73,6 +74,7 @@ class VideoStreamer:
                     continue
 
                 self.setMovement(False)
+                self.addText(frame)
                 self.write(frame)
 
             self.resetTimer += 1
@@ -84,7 +86,7 @@ class VideoStreamer:
 
         self.videoObj.cleanUp(videoStream)
 
-    def showView(self, frame, diff):
+    def addText(self, frame):
         if self.noMovementTimer > 0:
             cv2.putText(frame, "No movement. Recording will stop in " + str(Config.conf['noMovementLimit'] - self.noMovementTimer) + ' frames', (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
         elif self.hasMovement:
@@ -93,6 +95,7 @@ class VideoStreamer:
         if Args.args["timestamp"]:
             cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"), (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 255, 0), 1)
 
+    def showView(self, frame, diff):
         if Args.args["preview"] and self.showPreview:
             cv2.imshow("Base", frame)
 
