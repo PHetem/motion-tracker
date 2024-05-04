@@ -76,6 +76,8 @@ class VideoStreamer:
                 self.setMovement(False)
                 self.addText(frame)
                 self.write(frame)
+            else:
+                self.addText(frame)
 
             self.resetTimer += 1
             self.showView(frame, diff)
