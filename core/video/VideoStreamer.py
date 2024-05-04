@@ -5,7 +5,7 @@ import utils.args.Args as Args
 from core.video.Video import Video
 from core.video.VideoRecorder import VideoRecorder
 from core.video.VideoProcessor import VideoProcessor
-
+from core.Zoom import Zoom
 class VideoStreamer:
 
     send = False
@@ -18,6 +18,7 @@ class VideoStreamer:
     resetTimer = 0
     videoObj = None
     recorderObj = None
+    zoomObj = None
     hasMovement = False
     showPreview = True
 
@@ -27,6 +28,7 @@ class VideoStreamer:
 
         self.videoObj = Video()
         self.recorderObj = VideoRecorder()
+        self.zoomObj = Zoom()
 
         # Run every frame
         while True:
@@ -99,10 +101,11 @@ class VideoStreamer:
 
     def showView(self, frame, diff):
         if Args.args["preview"] and self.showPreview:
-            cv2.imshow("Base", frame)
+            cv2.imshow('Base', frame)
+            self.checkZoom(frame)
 
-        if Args.args["delta"]:
-            cv2.imshow("diff", diff)
+        if Args.args['delta']:
+            cv2.imshow('diff', diff)
 
     def endRecording(self):
         self.recorderObj.endRecording(self.send)
@@ -142,3 +145,8 @@ class VideoStreamer:
     def write(self, frame):
         self.captureTimer += 1
         self.recorderObj.recorder.write(frame)
+
+    def checkZoom(self, frame):
+        params = frame.copy()
+        cv2.setMouseCallback('Base', self.zoomObj.zoomIn, params)
+

@@ -8,5 +8,6 @@
     "maxSequence": 3,
     "timeReset": 15000,
     "delay": 300,
-    "noMovementLimit": 500
+    "noMovementLimit": 500,
+    "magnification": 5
 }
