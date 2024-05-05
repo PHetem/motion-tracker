@@ -2,6 +2,7 @@ import cv2
 import datetime
 import config.Config as Config
 import utils.args.Args as Args
+from utils.TimeUtils import TimeUtils
 from core.video.Video import Video
 from core.video.VideoRecorder import VideoRecorder
 from core.video.VideoProcessor import VideoProcessor
@@ -13,6 +14,7 @@ class VideoStreamer:
     videoObj = None
     recorderObj = None
     zoomObj = None
+    timeUtilsObj = None
 
     # State variables
     hasMovement = False
@@ -34,6 +36,9 @@ class VideoStreamer:
         self.videoObj = Video()
         self.recorderObj = VideoRecorder()
         self.zoomObj = Zoom()
+        if Args.args['break'] is not None:
+            self.timeUtilsObj = TimeUtils()
+            self.timeUtilsObj.setTimeLimit()
 
         # Run every frame
         while True:
@@ -90,7 +95,11 @@ class VideoStreamer:
             self.showView(frame, diff)
 
             if self.checkUserInput() == 'q':
-                print('Stopping execution')
+                print('Stopping execution due to user input')
+                break
+
+            if Args.args['break'] is not None and self.timeUtilsObj.aboveTimeLimit():
+                print('Stopping execution due to time limit constraint')
                 break
 
         self.videoObj.cleanUp(videoStream)
