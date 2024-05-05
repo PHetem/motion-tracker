@@ -147,6 +147,8 @@ class VideoStreamer:
         self.recorderObj.recorder.write(frame)
 
     def checkZoom(self, frame):
-        params = frame.copy()
-        cv2.setMouseCallback('Base', self.zoomObj.zoomIn, params)
+        cv2.setMouseCallback('Base', self.zoomObj.zoomIn)
+
+        if self.zoomObj.pressed:
+            self.zoomObj.openWindow(frame.copy())
 

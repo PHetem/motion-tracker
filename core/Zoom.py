@@ -3,22 +3,26 @@ import config.Config as Config
 
 class Zoom:
     pressed = False
+    xAxis = 0
+    yAxis = 0
+
     def zoomIn(self, event, xAxis, yAxis, flags, params):
         if event == cv2.EVENT_LBUTTONDOWN or (self.pressed is True and event == cv2.EVENT_MOUSEMOVE):
             self.pressed = True
-            self.openWindow(params, xAxis, yAxis)
+            self.xAxis = xAxis
+            self.yAxis = yAxis
         elif event == cv2.EVENT_LBUTTONUP:
             self.pressed = False
             self.closeWindow()
 
-    def openWindow(self, frame, xAxis, yAxis):
-        frame = self.crop(frame, xAxis, yAxis)
+    def openWindow(self, frame):
+        frame = self.crop(frame)
         cv2.imshow('Zoom', frame)
 
     def closeWindow(self):
         cv2.destroyWindow('Zoom')
 
-    def crop(self, frame, xAxis, yAxis):
+    def crop(self, frame):
         xRes, yRes = Config.conf['resolution']
         magnification = .5 / Config.conf['magnification']
 
@@ -27,10 +31,10 @@ class Zoom:
         yReducedRes = int(yRes * magnification)
 
         # Get area coordinates
-        xCoordinatesLeft = int(xAxis - xReducedRes)
-        xCoordinatesRight = int(xAxis + xReducedRes)
-        yCoordinatesUp = int(yAxis + yReducedRes)
-        yCoordinatesDown = int(yAxis - yReducedRes)
+        xCoordinatesLeft = int(self.xAxis - xReducedRes)
+        xCoordinatesRight = int(self.xAxis + xReducedRes)
+        yCoordinatesUp = int(self.yAxis + yReducedRes)
+        yCoordinatesDown = int(self.yAxis - yReducedRes)
 
         # Avoid escaping coordinates (math always looks messy)
         if xCoordinatesLeft < 0:
