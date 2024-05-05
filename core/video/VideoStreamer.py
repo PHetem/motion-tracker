@@ -7,20 +7,25 @@ from core.video.VideoRecorder import VideoRecorder
 from core.video.VideoProcessor import VideoProcessor
 from core.Zoom import Zoom
 class VideoStreamer:
-
-    send = False
     firstFrame = None
+
+    # Runtime objects
+    videoObj = None
+    recorderObj = None
+    zoomObj = None
+
+    # State variables
+    hasMovement = False
     isCapturing = False
+    canSend = False
+
+    # Counter variables
     noMovementTimer = 0
     captureTimer = 0
     consecutiveMotionFrames = 0
     sequenceCounter = 0
     resetTimer = 0
-    videoObj = None
-    recorderObj = None
-    zoomObj = None
-    hasMovement = False
-    showPreview = True
+
 
     def process(self, videoStream):
 
@@ -56,7 +61,7 @@ class VideoStreamer:
 
                 # Reached recording min size
                 if self.consecutiveMotionFrames >= Config.conf['minFrames']:
-                    self.send = True
+                    self.canSend = True
 
                 # Reached recording limit
                 if self.captureTimer >= Config.conf['maxFrames']:
@@ -100,7 +105,7 @@ class VideoStreamer:
             cv2.putText(frame, datetime.datetime.now().strftime("%A %d %B %Y %I:%M:%S%p"), (10, frame.shape[0] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.35, (0, 255, 0), 1)
 
     def showView(self, frame, diff):
-        if Args.args["preview"] and self.showPreview:
+        if Args.args["preview"]:
             cv2.imshow('Base', frame)
             self.checkZoom(frame)
 
@@ -108,8 +113,8 @@ class VideoStreamer:
             cv2.imshow('diff', diff)
 
     def endRecording(self):
-        self.recorderObj.endRecording(self.send)
-        self.send = False
+        self.recorderObj.endRecording(self.canSend)
+        self.canSend = False
 
     def resetRecording(self):
         self.endRecording()
@@ -151,4 +156,3 @@ class VideoStreamer:
 
         if self.zoomObj.pressed:
             self.zoomObj.openWindow(frame.copy())
-
