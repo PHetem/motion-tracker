@@ -6,5 +6,8 @@ def init():
     args = ArgsParser.addArgs()
     args = vars(args.parse_args())
 
-    if args['break'] is not None:
-        TimeUtils().checkFormat(args['break'])
+    if args['start'] is not None:
+        TimeUtils().checkFormat(args['start'])
+
+    if args['stop'] is not None:
+        TimeUtils().checkFormat(args['stop'])

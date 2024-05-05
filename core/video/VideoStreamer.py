@@ -36,9 +36,10 @@ class VideoStreamer:
         self.videoObj = Video()
         self.recorderObj = VideoRecorder()
         self.zoomObj = Zoom()
-        if Args.args['break'] is not None:
+
+        if Args.args['stop'] is not None:
             self.timeUtilsObj = TimeUtils()
-            self.timeUtilsObj.setTimeLimit()
+            self.timeUtilsObj.setTimeLimit(Args.args['stop'])
 
         # Run every frame
         while True:
@@ -98,7 +99,7 @@ class VideoStreamer:
                 print('Stopping execution due to user input')
                 break
 
-            if Args.args['break'] is not None and self.timeUtilsObj.aboveTimeLimit():
+            if Args.args['stop'] is not None and self.timeUtilsObj.aboveSetTime():
                 print('Stopping execution due to time limit constraint')
                 break
 
