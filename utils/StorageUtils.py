@@ -1,7 +1,7 @@
 import os
 import config.Config as Config
 
-class StorageManager:
+class StorageUtils:
 
     directory = None
 

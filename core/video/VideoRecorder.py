@@ -5,7 +5,7 @@ import os
 import pathlib
 import config.Config as Config
 import utils.args.Args as Args
-from utils.StorageManager import StorageManager
+from utils.StorageUtils import StorageUtils
 from core.Send import Send
 
 class VideoRecorder:
@@ -33,7 +33,7 @@ class VideoRecorder:
 
     def endRecording(self, send):
         self.reset()
-        StorageManager('recordings').manageStorageSpace()
+        StorageUtils('recordings').manageStorageSpace()
 
         if send and Args.args["send"]:
             Send(self.filepath).sendVideo()
