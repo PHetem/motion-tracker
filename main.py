@@ -1,9 +1,7 @@
-import datetime
 import time
 import dotenv
 import config.Config as Config
 import utils.args.Args as Args
-from utils.Timer import Timer
 from core.video.Video import Video
 from core.video.VideoStreamer import VideoStreamer
 from utils.TimeUtils import TimeUtils
