@@ -20,6 +20,7 @@ class VideoStreamer:
     hasMovement = False
     isCapturing = False
     canSend = False
+    breakExecution = False
 
     # Counter variables
     noMovementTimer = 0
@@ -95,7 +96,7 @@ class VideoStreamer:
             self.resetTimer += 1
             self.showView(frame, diff)
 
-            if self.checkUserInput() == 'q':
+            if self.breakExecution:
                 print('Stopping execution due to user input')
                 break
 
@@ -117,7 +118,7 @@ class VideoStreamer:
     def showView(self, frame, diff):
         if Args.args["preview"]:
             cv2.imshow('Base', frame)
-            self.checkZoom(frame)
+            self.checkUserInput(frame)
 
         if Args.args['delta']:
             cv2.imshow('diff', diff)
@@ -151,11 +152,15 @@ class VideoStreamer:
         self.sequenceCounter += 1
         self.isCapturing = True
 
-    def checkUserInput(self):
+    def checkUserInput(self, frame):
+        self.checkZoom(frame)
         key = cv2.waitKey(1)
 
-        if key == ord("q"):
-            return 'q'
+        if key == ord('u'):
+            self.firstFrame = None
+
+        if key == ord('q'):
+            self.breakExecution = True
 
     def write(self, frame):
         self.captureTimer += 1
