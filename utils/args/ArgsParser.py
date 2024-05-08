@@ -9,6 +9,7 @@ class ArgsParser:
         ap.add_argument("-p", "--preview", action="store_true", help="show image preview")
         ap.add_argument("-d", "--delta", action="store_true", help="show delta image")
         ap.add_argument("-c", "--show-contours", action="store_true", help="add contours to movement")
+        ap.add_argument("-o", "--sound-chime", action="store_true", help="sound alert when movement detected")
         ap.add_argument("-t", "--timestamp", action="store_true", help="add timestamp")
         ap.add_argument("-s", "--send", action="store_true", help="send file through telegram")
         return ap

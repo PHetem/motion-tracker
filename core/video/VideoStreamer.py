@@ -65,6 +65,8 @@ class VideoStreamer:
                 # First frame captured
                 if self.isCapturing is False:
                     self.startCapture()
+                    if Args.args['sound_chime']:
+                        print('\a')
 
                 # Reached recording min size
                 if self.consecutiveMotionFrames >= Config.conf['minFrames']:
