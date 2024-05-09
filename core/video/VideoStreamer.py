@@ -6,29 +6,17 @@ from utils.TimeUtils import TimeUtils
 from core.video.Video import Video
 from core.video.VideoRecorder import VideoRecorder
 from core.video.VideoProcessor import VideoProcessor
+from core.video.StreamState import StreamState
 from core.Zoom import Zoom
 class VideoStreamer:
     firstFrame = None
 
-    # Runtime objects
+    # Runtime objectss
     videoObj = None
     recorderObj = None
     zoomObj = None
     timeUtilsObj = None
-
-    # State variables
-    hasMovement = False
-    isCapturing = False
-    canSend = False
-    breakExecution = False
-
-    # Counter variables
-    noMovementTimer = 0
-    captureTimer = 0
-    consecutiveMotionFrames = 0
-    sequenceCounter = 0
-    resetTimer = 0
-
+    state = None
 
     def process(self, videoStream):
 
@@ -37,6 +25,7 @@ class VideoStreamer:
         self.videoObj = Video()
         self.recorderObj = VideoRecorder()
         self.zoomObj = Zoom()
+        self.state = StreamState()
 
         if Args.args['stop'] is not None:
             self.timeUtilsObj = TimeUtils()
@@ -45,7 +34,7 @@ class VideoStreamer:
         # Run every frame
         while True:
 
-            self.hasMovement = False
+            self.state.hasMovement = False
 
             # Get current frame
             frame = self.videoObj.getFrame(videoStream)
@@ -53,7 +42,7 @@ class VideoStreamer:
             simplifiedFrame = VideoProcessor.removeDetails(frame)
 
             # Select base frame for comparison
-            if self.firstFrame is None or self.resetTimer >= Config.conf['timeReset'] or self.sequenceCounter >= Config.conf['maxSequence']:
+            if self.firstFrame is None or self.state.resetTimer >= Config.conf['timeReset'] or self.state.sequenceCounter >= Config.conf['maxSequence']:
                 self.updateBaseFrame(simplifiedFrame)
                 continue
 
@@ -63,42 +52,42 @@ class VideoStreamer:
 
             if movementDetected:
                 # First frame captured
-                if self.isCapturing is False:
+                if self.state.isCapturing is False:
                     self.startCapture()
                     if Args.args['sound_chime']:
                         print('\a')
 
                 # Reached recording min size
-                if self.consecutiveMotionFrames >= Config.conf['minFrames']:
-                    self.canSend = True
+                if self.state.consecutiveMotionFrames >= Config.conf['minFrames']:
+                    self.state.canSend = True
 
                 # Reached recording limit
-                if self.captureTimer >= Config.conf['maxFrames']:
+                if self.state.captureTimer >= Config.conf['maxFrames']:
                     self.resetRecording()
                     continue
 
-                self.consecutiveMotionFrames += 1
+                self.state.consecutiveMotionFrames += 1
 
-                self.setMovement(True)
+                self.state.setMovement(True)
                 self.addText(frame)
                 self.write(frame)
 
-            elif self.isCapturing:
+            elif self.state.isCapturing:
                 # Reached recording limit
-                if self.noMovementTimer >= Config.conf['noMovementLimit'] or self.captureTimer >= Config.conf['maxFrames']:
+                if self.state.noMovementTimer >= Config.conf['noMovementLimit'] or self.state.captureTimer >= Config.conf['maxFrames']:
                     self.resetRecording()
                     continue
 
-                self.setMovement(False)
+                self.state.setMovement(False)
                 self.addText(frame)
                 self.write(frame)
             else:
                 self.addText(frame)
 
-            self.resetTimer += 1
+            self.state.resetTimer += 1
             self.showView(frame, diff)
 
-            if self.breakExecution:
+            if self.state.breakExecution:
                 print('Stopping execution due to user input')
                 break
 
@@ -109,9 +98,9 @@ class VideoStreamer:
         self.videoObj.cleanUp(videoStream)
 
     def addText(self, frame):
-        if self.noMovementTimer > 0:
-            cv2.putText(frame, "No movement. Recording will stop in " + str(Config.conf['noMovementLimit'] - self.noMovementTimer) + ' frames', (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-        elif self.hasMovement:
+        if self.state.noMovementTimer > 0:
+            cv2.putText(frame, "No movement. Recording will stop in " + str(Config.conf['noMovementLimit'] - self.state.noMovementTimer) + ' frames', (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+        elif self.state.hasMovement:
             cv2.putText(frame, "Movement detected", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
         if Args.args["timestamp"]:
@@ -125,34 +114,18 @@ class VideoStreamer:
         if Args.args['delta']:
             cv2.imshow('diff', diff)
 
-    def endRecording(self):
-        self.recorderObj.endRecording(self.canSend)
-        self.canSend = False
-
     def resetRecording(self):
-        self.endRecording()
-        self.noMovementTimer = 0
-        self.captureTimer = 0
-        self.isCapturing = False
+        self.recorderObj.endRecording(self.state.canSend)
+        self.state.setRecording(False)
 
     def updateBaseFrame(self, simplifiedFrame):
         print('Base frame updated')
-        self.resetTimer = 0
-        self.sequenceCounter = 0
+        self.state.baseFrameUpdated()
         self.firstFrame = simplifiedFrame
-
-    def setMovement(self, movement):
-        if movement:
-            self.hasMovement = True
-            self.noMovementTimer = 0
-        else:
-            self.consecutiveMotionFrames = 0
-            self.noMovementTimer += 1
 
     def startCapture(self):
         self.recorderObj.newRecording()
-        self.sequenceCounter += 1
-        self.isCapturing = True
+        self.state.setRecording(True)
 
     def checkUserInput(self, frame):
         self.checkZoom(frame)
@@ -162,10 +135,10 @@ class VideoStreamer:
             self.firstFrame = None
 
         if key == ord('q'):
-            self.breakExecution = True
+            self.state.breakExecution = True
 
     def write(self, frame):
-        self.captureTimer += 1
+        self.state.newFrame()
         self.recorderObj.recorder.write(frame)
 
     def checkZoom(self, frame):
