@@ -33,6 +33,9 @@ class TimeUtils:
 
         self.breakAt = breakAt
 
-    def resetTimer(self):
-        self.breakAt = None
+    def resetTimer(self, seconds = 0):
+        if seconds > 0:
+            self.setTimer(seconds)
+        else:
+            self.breakAt = None
 
