@@ -10,7 +10,6 @@ class StreamState:
     captureTimer = 0
     consecutiveMotionFrames = 0
     sequenceCounter = 0
-    resetTimer = 0
     skipFrameCounter = 0
 
     def setMovement(self, movement):
@@ -33,7 +32,6 @@ class StreamState:
             self.skipFrameCounter = 0
 
     def baseFrameUpdated(self):
-        self.resetTimer = 0
         self.sequenceCounter = 0
 
     def newFrame(self):

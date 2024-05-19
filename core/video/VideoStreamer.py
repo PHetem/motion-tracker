@@ -18,6 +18,7 @@ class VideoStreamer:
     zoomObj = None
     timeUtilsObj = None
     state = None
+    resetTimer = None
 
     def process(self, videoStream):
 
@@ -27,6 +28,9 @@ class VideoStreamer:
         self.recorderObj = VideoRecorder()
         self.zoomObj = Zoom()
         self.state = StreamState()
+
+        self.resetTimer = TimeUtils()
+        self.resetTimer.setTimer(Config.conf['timeReset'])
 
         if Args.args['stop'] is not None:
             self.timeUtilsObj = TimeUtils()
@@ -42,7 +46,6 @@ class VideoStreamer:
 
             if (not self.state.isCapturing) and self.state.skipFrameCounter < Config.conf['skipFrames']:
                 self.state.skipFrameCounter += 1
-                self.state.resetTimer += 1
                 self.addText(frame)
                 self.showView(frame)
             else:
@@ -50,7 +53,8 @@ class VideoStreamer:
                 simplifiedFrame = VideoProcessor.removeDetails(frame)
 
                 # Select base frame for comparison
-                if self.firstFrame is None or self.state.resetTimer >= Config.conf['timeReset'] or self.state.sequenceCounter >= Config.conf['maxSequence']:
+                if self.firstFrame is None or self.resetTimer.aboveSetTime() or self.state.sequenceCounter >= Config.conf['maxSequence']:
+                    self.resetTimer.resetTimer(Config.conf['timeReset'])
                     self.updateBaseFrame(simplifiedFrame)
                     continue
 
@@ -96,7 +100,6 @@ class VideoStreamer:
                 else:
                     self.addText(frame)
 
-                self.state.resetTimer += 1
                 self.showView(frame)
 
             if self.state.breakExecution:
