@@ -10,5 +10,6 @@
     "delay": 300,
     "noMovementLimit": 500,
     "magnification": 5,
-    "storageLimit": 1073741824
+    "storageLimit": 1073741824,
+    "skipFrames": 10
 }
