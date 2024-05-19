@@ -18,7 +18,7 @@ videoStream = video.selectVideoInput()
 if Args.args['start'] is not None:
     timeUtilsObj = TimeUtils()
     timeUtilsObj.setTimeLimit(Args.args['start'])
-    print('Capture will start at ' + Args.args['start'])
+    print(f"Capture will start at {Args.args['start']}")
 
     while not timeUtilsObj.aboveSetTime():
         time.sleep(1)

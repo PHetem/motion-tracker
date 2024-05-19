@@ -30,7 +30,7 @@ class StorageUtils:
         while not self.hasStorageSpace():
             os.remove(os.path.abspath(fileList[0]))
             fileList.pop(0)
-            print('removed file ' + fileList[0])
+            print(f"removed file {fileList[0]}")
 
     def is_hidden(self, file):
         return file.startswith('.')

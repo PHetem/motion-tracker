@@ -114,7 +114,8 @@ class VideoStreamer:
 
     def addText(self, frame):
         if self.state.noMovementTimer > 0:
-            cv2.putText(frame, "No movement. Recording will stop in " + str(Config.conf['noMovementLimit'] - self.state.noMovementTimer) + ' frames', (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+            remainingFrames = str(Config.conf['noMovementLimit'] - self.state.noMovementTimer)
+            cv2.putText(frame, f'No movement. Recording will stop in {remainingFrames} frames', (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
         elif self.state.hasMovement:
             cv2.putText(frame, "Movement detected", (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 

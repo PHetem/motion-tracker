@@ -22,13 +22,13 @@ class VideoRecorder:
         if self.recorder is not None:
             self.recorder.release()
 
-        print('Recording finished at ' + datetime.datetime.now().strftime("%I:%M:%S") + '. Saving video.')
+        print(f"Recording finished at {datetime.datetime.now().strftime('%I:%M:%S')}. Saving video.")
 
     def newRecording(self):
         self.filename = 'recordings/' + datetime.datetime.now().strftime("%d_%m_%Y_%I_%M_%S_") + str(random.randrange(10000, 99999)) + '.mp4'
         self.filepath = pathlib.PureWindowsPath(os.getcwd() + '/' + self.filename)
         self.recorder = cv2.VideoWriter(self.filename, self.fourcc, Config.conf['fps'], Config.conf['resolution'])
-        print('New recording started at ' + datetime.datetime.now().strftime("%I:%M:%S"))
+        print(f"New recording started at {datetime.datetime.now().strftime('%I:%M:%S')}")
 
 
     def endRecording(self, send):

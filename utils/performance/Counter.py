@@ -15,8 +15,8 @@ class Counter:
 
     def end(self):
         self.endingTime = datetime.datetime.now().timestamp()
-        print('Average per step was ' + str(self.getAverage()))
-        print('Total seconds elapsed was ' + str(self.endingTime - self.startingTime))
+        print(f"Average per step was {str(self.getAverage())}")
+        print(f"Total seconds elapsed was {str(self.endingTime - self.startingTime)}")
         self.iterations = []
         self.lastStepEnd = 0
         self.start(self.maxSteps)
