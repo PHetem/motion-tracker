@@ -25,5 +25,14 @@ class TimeUtils:
 
     def aboveSetTime(self):
         now = datetime.datetime.now()
-        return self.breakAt < now
+        return self.breakAt is not None and self.breakAt < now
+
+    def setTimer(self, seconds):
+        breakAt = datetime.datetime.now()
+        breakAt += datetime.timedelta(seconds = seconds)
+
+        self.breakAt = breakAt
+
+    def resetTimer(self):
+        self.breakAt = None
 
